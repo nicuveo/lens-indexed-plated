@@ -85,5 +85,8 @@ jobs:
 
     - name: 'Run stylish-haskell'
       run: |
-        curl -sL https://raw.github.com/haskell/stylish-haskell/master/scripts/latest.sh | sh -s -ri src
+        mkdir tmp
+        curl --progress-bar --location -o tmp/stylish.tar.gz https://github.com/haskell/stylish-haskell/releases/download/v0.14.5.0/stylish-haskell-v0.14.5.0-linux-x86_64.tar.gz
+        tar -xzf tmp/stylish.tar.gz -C tmp
+        tmp/stylish-haskell-*/stylish-haskell -ri src
         test -z "$( git status --porcelain src )" || echo "::error ::all files must be formatted with stylish-haskell"
