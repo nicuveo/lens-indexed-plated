@@ -1,6 +1,7 @@
 cabal-version:      2.4
 
 name:               lens-indexed-plated
+category:           Data, Lenses, Generics
 version:            0.1.0
 author:             Antoine Leblanc
 maintainer:         nicuveo@gmail.com
