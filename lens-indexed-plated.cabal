@@ -9,8 +9,10 @@ bug-reports:        https://github.com/nicuveo/lens-indexed-plated/issues
 synopsis:           Indexed version of Plated.
 description:
   This package contains an alternative version of lens' @Plated@ that
-  allows for a user-specified index. Where @plate@ returns a
-  @Traversal@, @indexedPlate@ returns a @IndexedTraversal@.
+  allows for a user-specified index: where @plate@ returns a
+  @Traversal@, @iplate@ takes an additional starting index and returns
+  a @IndexedTraversal@. It also provides an indexed equivalent to most
+  of the @Plated@ functions.
 
 license:      BSD-2-Clause
 license-file: LICENSE
