@@ -44,8 +44,8 @@ library
     -Wno-safe
     -Wno-unsafe
   build-depends:
-    base ^>=4.16.4.0,
-    lens
+    base ^>= 4.16.4.0,
+    lens ^>= 5.2.2
 
 flag compile-examples
   manual: True
