@@ -11,8 +11,11 @@
 --   * all @Getter@, @Setter@ and @LensLike@ are replaced by their @Indexed@
 --     equivalents, and all take an additional index parameter
 module Control.Lens.IndexedPlated
-  ( IndexedPlated (..)
+  ( -- * Indexed plated
+    IndexedPlated (..)
+    -- * Children
   , ichildren
+    -- * Rewrite
   , irewrite
   , irewriteOf
   , irewriteOn
@@ -21,14 +24,17 @@ module Control.Lens.IndexedPlated
   , irewriteMOf
   , irewriteMOn
   , irewriteMOnOf
+    -- * Universe
   , iuniverse
   , iuniverseOf
   , iuniverseOn
   , iuniverseOnOf
+    -- * Cosmos
   , icosmos
   , icosmosOf
   , icosmosOn
   , icosmosOnOf
+    -- * Transform
   , itransform
   , itransformOf
   , itransformOn
@@ -37,6 +43,7 @@ module Control.Lens.IndexedPlated
   , itransformMOf
   , itransformMOn
   , itransformMOnOf
+    -- * Paramorphisms
   , ipara
   , iparaOf
   ) where
@@ -47,7 +54,7 @@ import Data.Monoid
 
 
 --------------------------------------------------------------------------------
--- * Indexed plated
+-- Indexed plated
 
 class IndexedPlated i a where
   -- | 'IndexedTraversal' of the immediate children of this structure.
@@ -55,7 +62,7 @@ class IndexedPlated i a where
 
 
 --------------------------------------------------------------------------------
--- * Children
+-- Children
 
 -- | Given an 'IndexedPlated' container and its index, extract the immediate
 -- descendants of the container and their indices.
@@ -65,7 +72,7 @@ ichildren p = itoListOf (iplate p)
 
 
 --------------------------------------------------------------------------------
--- * Rewrite
+-- Rewrite
 
 -- | Rewrite a container by applying a rule everywhere possible. If the rule
 -- returns @Nothing@, the value remains unchanged, but while it returns a new
@@ -124,7 +131,7 @@ irewriteMOnOf b l f i = mapMOf b $ irewriteMOf l f i
 
 
 --------------------------------------------------------------------------------
--- * Universe
+-- Universe
 
 -- | Retrieve all of the transitive descendants (and their indices) of an
 -- 'IndexedPlated' container, including itself.
@@ -159,7 +166,7 @@ iuniverseOnOf b p i x = appEndo (foldMapOf b (iuniverseOf' p i) x) []
 
 
 --------------------------------------------------------------------------------
--- * Cosmos
+-- Cosmos
 
 -- | Fold over all transitive descendants (and their indices) of an
 -- 'IndexedPlated' container, including itself.
@@ -187,7 +194,7 @@ icosmosOnOf d p i = d . (icosmosOf p i)
 
 
 --------------------------------------------------------------------------------
--- * Transform
+-- Transform
 
 -- | Recursively transform every element in the structure, in a bottom-up
 -- manner.
@@ -239,7 +246,7 @@ itransformMOnOf b l f = mapMOf b . itransformMOf l f
 
 
 --------------------------------------------------------------------------------
--- * Paramorphisms
+-- Paramorphisms
 
 -- | Perform a fold-like computation on each value within a container.
 ipara :: IndexedPlated i a => (i -> a -> [r] -> r) -> i -> a -> r
