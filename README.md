@@ -17,14 +17,14 @@ data Expr
   | Neg Expr
   | Add Expr Expr
 
-instance Plated Exepr where
+instance Plated Expr where
   plate f = \case
+    Val n   -> pure $ Val n
     Neg e   -> Neg <$> f e
     Add x y -> Add <$> f x <*> f y
-    Val n   -> pure $ Val n
 ```
 
-Using the combinators provided alongside `Plated`, it is now easy to traverse this recursive structure without having to write the boiler_plate_ ourselves:
+Using the combinators provided alongside `Plated`, it is now easy to traverse this recursive structure without having to write the boiler*plate* ourselves:
 
 ```haskell
 simplify :: Expr -> Expr
@@ -79,7 +79,7 @@ instance IndexedPlated Path Value where
     Null     -> pure Null
 ```
 
-This could be used for error reporting; for instance, this function attempts to replace all strings starting with a `$` by corresponding values from a lookup table. Despite no recursion being present in this function, the underlying use of `IndexedPlated` means that all such possible expansions will be performed, recursively (preventing infinite recursions from recursive anchors is left as an exercise to the reader).
+This could be used for error reporting; for instance, this function attempts to replace all strings starting with a `$` by corresponding values from a lookup table. Despite no recursion being present in this function, the underlying use of `IndexedPlated` means that all such possible expansions will be performed, recursively (preventing infinite expansions from recursive anchors is left as an exercise to the reader).
 
 ```haskell
 expandAnchors
