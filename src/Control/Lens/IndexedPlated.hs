@@ -189,7 +189,7 @@ icosmosOn d = icosmosOnOf d iplate
 -- | Similar to 'icosmosOf', but performed recursively over part of a larger
 -- structure.
 icosmosOnOf :: (Applicative f, Contravariant f) => LensLike' f s a -> (i -> IndexedLensLike' i f a a) -> (i -> LensLike' f s a)
-icosmosOnOf d p i = d . (icosmosOf p i)
+icosmosOnOf d p i = d . icosmosOf p i
 {-# INLINE icosmosOnOf #-}
 
 
@@ -224,7 +224,7 @@ itransformOnOf b l f = over b . itransformOf l f
 
 -- | Similar to 'itransform', but using a monadic rule.
 itransformM :: (Monad m, IndexedPlated i a) => (i -> a -> m a) -> i -> a -> m a
-itransformM = itransformMOf (\i -> iplate i)
+itransformM = itransformMOf iplate
 {-# INLINE itransformM #-}
 
 -- | Similar to 'itransformOn', but using a monadic rule.
