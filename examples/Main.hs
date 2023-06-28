@@ -25,7 +25,7 @@ import Data.Tree
 -- index. Note that we're not recursively traversing the entire tree, but only
 -- visiting the direct descendents.
 instance IndexedPlated [a] (Tree a) where
-  indexedPlate p f (Node label children) =
+  iplate p f (Node label children) =
     Node label <$> traverse (indexed f (label:p)) children
 
 -- | Prints a tree.

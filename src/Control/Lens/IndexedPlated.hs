@@ -16,7 +16,7 @@ import Data.Monoid
 
 class IndexedPlated i a where
   -- | 'IndexedTraversal' of the immediate children of this structure.
-  indexedPlate :: i -> IndexedTraversal' i a a
+  iplate :: i -> IndexedTraversal' i a a
 
 
 --------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ class IndexedPlated i a where
 -- | Given an 'IndexedPlated' container and its index, extract the immediate
 -- descendants of the container and their indices.
 ichildren :: IndexedPlated i a => i -> a -> [(i, a)]
-ichildren p = itoListOf (indexedPlate p)
+ichildren p = itoListOf (iplate p)
 {-# INLINE ichildren #-}
 
 
@@ -33,7 +33,7 @@ ichildren p = itoListOf (indexedPlate p)
 -- * rewrite
 
 irewrite :: IndexedPlated i a => (i -> a -> Maybe a) -> i -> a -> a
-irewrite = irewriteOf indexedPlate
+irewrite = irewriteOf iplate
 {-# INLINE irewrite #-}
 
 irewriteOf :: (i -> IndexedSetter i a b a b) -> (i -> b -> Maybe a) -> i -> a -> b
@@ -51,7 +51,7 @@ irewriteOnOf b l f i = over b $ irewriteOf l f i
 {-# INLINE irewriteOnOf #-}
 
 irewriteM :: (Monad m, IndexedPlated i a) => (i -> a -> m (Maybe a)) -> i -> a -> m a
-irewriteM = irewriteMOf indexedPlate
+irewriteM = irewriteMOf iplate
 {-# INLINE irewriteM #-}
 
 irewriteMOf :: Monad m => (i -> IndexedLensLike i (WrappedMonad m) a b a b) -> (i -> b -> m (Maybe a)) -> i -> a -> m b
@@ -73,7 +73,7 @@ irewriteMOnOf b l f i = mapMOf b $ irewriteMOf l f i
 -- * universe
 
 iuniverse :: forall i a. IndexedPlated i a => i -> a -> [(i, a)]
-iuniverse = iuniverseOf indexedPlate
+iuniverse = iuniverseOf iplate
 {-# INLINE iuniverse #-}
 
 iuniverseOf :: (i -> IndexedGetting i (Endo [(i, a)]) a a) -> i -> a -> [(i, a)]
@@ -87,7 +87,7 @@ iuniverseOf' l = go
 {-# INLINE iuniverseOf' #-}
 
 iuniverseOn ::  IndexedPlated i a => Getting (Endo [(i, a)]) s a -> i -> s -> [(i, a)]
-iuniverseOn b = iuniverseOnOf b indexedPlate
+iuniverseOn b = iuniverseOnOf b iplate
 {-# INLINE iuniverseOn #-}
 
 iuniverseOnOf :: Getting (Endo [(i, a)]) s a -> (i -> IndexedGetting i (Endo [(i, a)]) a a) -> i -> s -> [(i, a)]
@@ -99,7 +99,7 @@ iuniverseOnOf b p i x = appEndo (foldMapOf b (iuniverseOf' p i) x) []
 -- * cosmos
 
 icosmos :: IndexedPlated i a => i -> IndexedFold i a a
-icosmos = icosmosOf indexedPlate
+icosmos = icosmosOf iplate
 {-# INLINE icosmos #-}
 
 icosmosOf :: (Applicative f, Contravariant f) => (i -> IndexedLensLike' i f a a) -> (i -> IndexedLensLike' i f a a)
@@ -107,7 +107,7 @@ icosmosOf d i f s = indexed f i s *> d i (icosmosOf d i f) s
 {-# INLINE icosmosOf #-}
 
 icosmosOn :: (Applicative f, Contravariant f, IndexedPlated i a) => LensLike' f s a -> (i -> LensLike' f s a)
-icosmosOn d = icosmosOnOf d indexedPlate
+icosmosOn d = icosmosOnOf d iplate
 {-# INLINE icosmosOn #-}
 
 icosmosOnOf :: (Applicative f, Contravariant f) => LensLike' f s a -> (i -> IndexedLensLike' i f a a) -> (i -> LensLike' f s a)
@@ -119,7 +119,7 @@ icosmosOnOf d p i = d . (icosmosOf p i)
 -- * transform
 
 itransform :: IndexedPlated i a => (i -> a -> a) -> i -> a -> a
-itransform = itransformOf indexedPlate
+itransform = itransformOf iplate
 {-# INLINE itransform #-}
 
 itransformOn :: IndexedPlated i a => ASetter s t a a -> (i -> a -> a) -> i -> s -> t
@@ -137,7 +137,7 @@ itransformOnOf b l f = over b . itransformOf l f
 {-# INLINE itransformOnOf #-}
 
 itransformM :: (Monad m, IndexedPlated i a) => (i -> a -> m a) -> i -> a -> m a
-itransformM = itransformMOf (\i -> indexedPlate i)
+itransformM = itransformMOf (\i -> iplate i)
 {-# INLINE itransformM #-}
 
 itransformMOn :: (Monad m, IndexedPlated i a) => LensLike (WrappedMonad m) s t a a -> (i -> a -> m a) -> i -> s -> m t
@@ -159,7 +159,7 @@ itransformMOnOf b l f = mapMOf b . itransformMOf l f
 -- * paramorphisms
 
 ipara :: IndexedPlated i a => (i -> a -> [r] -> r) -> i -> a -> r
-ipara = iparaOf indexedPlate
+ipara = iparaOf iplate
 {-# INLINE ipara #-}
 
 iparaOf :: (i -> IndexedGetting i (Endo [(i, a)]) a a) -> (i -> a -> [r] -> r) -> i -> a -> r
