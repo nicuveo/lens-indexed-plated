@@ -85,10 +85,12 @@ data Step = Key Text | Index Int
 
 instance IndexedPlated Path Value where
   iplate parentPath f = \case
-    Object o -> flip traverseWithKey o \key value ->
-      f (parentPath <> [Key key]) value
-    Array  a -> for (indexed a) \(index, value) ->
-      f (parentPath <> [Index index]) value
+    Object o -> fmap Object $
+      flip traverseWithKey o \key value ->
+        f (parentPath <> [Key key]) value
+    Array  a -> fmap Array $
+      for (indexed a) \(index, value) ->
+        f (parentPath <> [Index index]) value
     String s -> pure $ String s
     Number x -> pure $ Number x
     Bool   b -> pure $ Bool b
