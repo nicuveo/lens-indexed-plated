@@ -66,6 +66,8 @@ class IndexedPlated i a where
 
 -- | Given an 'IndexedPlated' container and its index, extract the immediate
 -- descendants of the container and their indices.
+--
+-- @since 0.1.0
 ichildren :: IndexedPlated i a => i -> a -> [(i, a)]
 ichildren p = itoListOf (iplate p)
 {-# INLINE ichildren #-}
@@ -79,6 +81,8 @@ ichildren p = itoListOf (iplate p)
 -- value the transformation will be recursively applied. This guarantees that
 -- this function is applied everywhere possible, and that the result does not
 -- contain any eligible value.
+--
+-- @since 0.1.0
 irewrite :: IndexedPlated i a => (i -> a -> Maybe a) -> i -> a -> a
 irewrite = irewriteOf iplate
 {-# INLINE irewrite #-}
@@ -89,6 +93,8 @@ irewrite = irewriteOf iplate
 -- transformation will be recursively applied. This guarantees that this
 -- function is applied everywhere possible, and that the result does not contain
 -- any eligible value.
+--
+-- @since 0.1.0
 irewriteOf :: (i -> IndexedSetter i a b a b) -> (i -> b -> Maybe a) -> i -> a -> b
 irewriteOf l f = go
   where
@@ -97,22 +103,30 @@ irewriteOf l f = go
 
 -- | Similar to 'irewrite', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 irewriteOn :: IndexedPlated i a => ASetter s t a a -> (i -> a -> Maybe a) -> i -> s -> t
 irewriteOn b f i = over b $ irewrite f i
 {-# INLINE irewriteOn #-}
 
 -- | Similar to 'irewriteOf', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 irewriteOnOf :: ASetter s t a b -> (i -> IndexedSetter i a b a b) -> (i -> b -> Maybe a) -> i -> s -> t
 irewriteOnOf b l f i = over b $ irewriteOf l f i
 {-# INLINE irewriteOnOf #-}
 
 -- | Similar to 'irewrite', but using a monadic rule.
+--
+-- @since 0.1.0
 irewriteM :: (Monad m, IndexedPlated i a) => (i -> a -> m (Maybe a)) -> i -> a -> m a
 irewriteM = irewriteMOf iplate
 {-# INLINE irewriteM #-}
 
 -- | Similar to 'irewriteOf', but using a monadic rule.
+--
+-- @since 0.1.0
 irewriteMOf :: Monad m => (i -> IndexedLensLike i (WrappedMonad m) a b a b) -> (i -> b -> m (Maybe a)) -> i -> a -> m b
 irewriteMOf l f = go
   where
@@ -120,11 +134,15 @@ irewriteMOf l f = go
 {-# INLINE irewriteMOf #-}
 
 -- | Similar to 'irewriteOn', but using a monadic rule.
+--
+-- @since 0.1.0
 irewriteMOn :: (Monad m, IndexedPlated i a) => LensLike (WrappedMonad m) s t a a -> (i -> a -> m (Maybe a)) -> i -> s -> m t
 irewriteMOn b f i = mapMOf b $ irewriteM f i
 {-# INLINE irewriteMOn #-}
 
 -- | Similar to 'irewriteOnOf', but using a monadic rule.
+--
+-- @since 0.1.0
 irewriteMOnOf :: Monad m => LensLike (WrappedMonad m) s t a b -> (i -> IndexedLensLike i (WrappedMonad m) a b a b) -> (i -> b -> m (Maybe a)) -> i -> s -> m t
 irewriteMOnOf b l f i = mapMOf b $ irewriteMOf l f i
 {-# INLINE irewriteMOnOf #-}
@@ -135,6 +153,8 @@ irewriteMOnOf b l f i = mapMOf b $ irewriteMOf l f i
 
 -- | Retrieve all of the transitive descendants (and their indices) of an
 -- 'IndexedPlated' container, including itself.
+--
+-- @since 0.1.0
 iuniverse :: forall i a. IndexedPlated i a => i -> a -> [(i, a)]
 iuniverse = iuniverseOf iplate
 {-# INLINE iuniverse #-}
@@ -142,6 +162,8 @@ iuniverse = iuniverseOf iplate
 -- | Retrieve all of the transitive descendants (and their indices) of a
 -- container, including itself, using the provided lens to locate immediate
 -- children.
+--
+-- @since 0.1.0
 iuniverseOf :: (i -> IndexedGetting i (Endo [(i, a)]) a a) -> i -> a -> [(i, a)]
 iuniverseOf l = \i x -> appEndo (iuniverseOf' l i x) []
 {-# INLINE iuniverseOf #-}
@@ -154,12 +176,16 @@ iuniverseOf' l = go
 
 -- | Similar to 'iuniverse', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 iuniverseOn ::  IndexedPlated i a => Getting (Endo [(i, a)]) s a -> i -> s -> [(i, a)]
 iuniverseOn b = iuniverseOnOf b iplate
 {-# INLINE iuniverseOn #-}
 
 -- | Similar to 'iuniverseOf', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 iuniverseOnOf :: Getting (Endo [(i, a)]) s a -> (i -> IndexedGetting i (Endo [(i, a)]) a a) -> i -> s -> [(i, a)]
 iuniverseOnOf b p i x = appEndo (foldMapOf b (iuniverseOf' p i) x) []
 {-# INLINE iuniverseOnOf #-}
@@ -170,24 +196,32 @@ iuniverseOnOf b p i x = appEndo (foldMapOf b (iuniverseOf' p i) x) []
 
 -- | Fold over all transitive descendants (and their indices) of an
 -- 'IndexedPlated' container, including itself.
+--
+-- @since 0.1.0
 icosmos :: IndexedPlated i a => i -> IndexedFold i a a
 icosmos = icosmosOf iplate
 {-# INLINE icosmos #-}
 
 -- | Fold over all transitive descendants (and their indices) of a container,
 -- including itself, using the provided lens to locate immediate children.
+--
+-- @since 0.1.0
 icosmosOf :: (Applicative f, Contravariant f) => (i -> IndexedLensLike' i f a a) -> (i -> IndexedLensLike' i f a a)
 icosmosOf d i f s = indexed f i s *> d i (icosmosOf d i f) s
 {-# INLINE icosmosOf #-}
 
 -- | Similar to 'icosmos', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 icosmosOn :: (Applicative f, Contravariant f, IndexedPlated i a) => LensLike' f s a -> (i -> LensLike' f s a)
 icosmosOn d = icosmosOnOf d iplate
 {-# INLINE icosmosOn #-}
 
 -- | Similar to 'icosmosOf', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 icosmosOnOf :: (Applicative f, Contravariant f) => LensLike' f s a -> (i -> IndexedLensLike' i f a a) -> (i -> LensLike' f s a)
 icosmosOnOf d p i = d . icosmosOf p i
 {-# INLINE icosmosOnOf #-}
@@ -198,12 +232,16 @@ icosmosOnOf d p i = d . icosmosOf p i
 
 -- | Recursively transform every element in the structure, in a bottom-up
 -- manner.
+--
+-- @since 0.1.0
 itransform :: IndexedPlated i a => (i -> a -> a) -> i -> a -> a
 itransform = itransformOf iplate
 {-# INLINE itransform #-}
 
 -- | Recursively transform every element in the structure, in a bottom-up
 -- manner, using the provided lens to locate immediate children.
+--
+-- @since 0.1.0
 itransformOf :: (i -> IndexedSetter i a b a b) -> (i -> b -> b) -> i -> a -> b
 itransformOf l f = go
   where
@@ -212,27 +250,37 @@ itransformOf l f = go
 
 -- | Similar to 'itransform', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 itransformOn :: IndexedPlated i a => ASetter s t a a -> (i -> a -> a) -> i -> s -> t
 itransformOn b i = over b . itransform i
 {-# INLINE itransformOn #-}
 
 -- | Similar to 'itransformOf', but performed recursively over part of a larger
 -- structure.
+--
+-- @since 0.1.0
 itransformOnOf :: ASetter s t a b -> (i -> IndexedSetter i a b a b) -> (i -> b -> b) -> i -> s -> t
 itransformOnOf b l f = over b . itransformOf l f
 {-# INLINE itransformOnOf #-}
 
 -- | Similar to 'itransform', but using a monadic rule.
+--
+-- @since 0.1.0
 itransformM :: (Monad m, IndexedPlated i a) => (i -> a -> m a) -> i -> a -> m a
 itransformM = itransformMOf iplate
 {-# INLINE itransformM #-}
 
 -- | Similar to 'itransformOn', but using a monadic rule.
+--
+-- @since 0.1.0
 itransformMOn :: (Monad m, IndexedPlated i a) => LensLike (WrappedMonad m) s t a a -> (i -> a -> m a) -> i -> s -> m t
 itransformMOn b f = mapMOf b . itransformM f
 {-# INLINE itransformMOn #-}
 
 -- | Similar to 'itransformOf', but using a monadic rule.
+--
+-- @since 0.1.0
 itransformMOf :: Monad m => (i -> IndexedLensLike i (WrappedMonad m) a b a b) -> (i -> b -> m b) -> i -> a -> m b
 itransformMOf l f = go
   where
@@ -240,6 +288,8 @@ itransformMOf l f = go
 {-# INLINE itransformMOf #-}
 
 -- | Similar to 'itransformOnOf', but using a monadic rule.
+--
+-- @since 0.1.0
 itransformMOnOf :: Monad m => LensLike (WrappedMonad m) s t a b -> (i -> IndexedLensLike i (WrappedMonad m) a b a b) -> (i -> b -> m b) -> i -> s -> m t
 itransformMOnOf b l f = mapMOf b . itransformMOf l f
 {-# INLINE itransformMOnOf #-}
@@ -249,12 +299,16 @@ itransformMOnOf b l f = mapMOf b . itransformMOf l f
 -- Paramorphisms
 
 -- | Perform a fold-like computation on each value within a container.
+--
+-- @since 0.1.0
 ipara :: IndexedPlated i a => (i -> a -> [r] -> r) -> i -> a -> r
 ipara = iparaOf iplate
 {-# INLINE ipara #-}
 
 -- | Perform a fold-like computation on each value within a container, using the
 -- provided lens to locate immediate children.
+--
+-- @since 0.1.0
 iparaOf :: (i -> IndexedGetting i (Endo [(i, a)]) a a) -> (i -> a -> [r] -> r) -> i -> a -> r
 iparaOf l f = go
   where
