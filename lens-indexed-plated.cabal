@@ -39,5 +39,5 @@ library
         -Wno-missing-safe-haskell-mode -Wno-safe -Wno-unsafe
 
     build-depends:
-        base ^>=4.16.4.0,
+        base >=4.16 && <5,
         lens ^>=5.2.2
