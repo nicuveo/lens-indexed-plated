@@ -104,11 +104,9 @@ main = do
   --       3
   --       3
   putStrLn ""
-  putStrLn "# rewrite"
-  let toDepth p (Node l cs)
-        | length p == l = Nothing
-        | otherwise     = Just $ Node (length p) cs
-  display $ irewrite @[Int] toDepth [] baseTree
+  putStrLn "# transform"
+  let toDepth p (Node _ cs) = Node (length p) cs
+  display $ itransform @[Int] toDepth [] baseTree
 
   -- [1]
   -- 2
